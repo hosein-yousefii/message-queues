@@ -12,17 +12,21 @@ if [[ ! -e venv ]]; then
 fi
 
 simple () {
+	
+	docker network create rabbit &>/dev/null
+
 	echo "Starting rabbit-1"
 
-	docker run -d --rm --net rabbit -v ${PWD}/docker/rabbit-1/:/config/ -e RABBITMQ_CONFIG_FILE=/config/rabbitmq -e RABBITMQ_ERLANG_COOKIE=ETOBVBEFXUPGETFECHSQ --hostname rabbit-1 --name rabbit-1 -p 8081:15672 -p 5672:5672 rabbitmq:3.9.21-management &>/dev/null
+	docker run -d  --net rabbit -v ${PWD}/docker/rabbit-1/:/config/ -e RABBITMQ_CONFIG_FILE=/config/rabbitmq -e RABBITMQ_ERLANG_COOKIE=ETOBVBEFXUPGETFECHSQ --hostname rabbit-1 --name rabbit-1 -p 8081:15672 -p 5672:5672 rabbitmq:3.9.21-management &>/dev/null
 
 	echo "Starting rabbit-2"
 
-	docker run -d --rm --net rabbit -v ${PWD}/docker/rabbit-2/:/config/ -e RABBITMQ_CONFIG_FILE=/config/rabbitmq -e RABBITMQ_ERLANG_COOKIE=ETOBVBEFXUPGETFECHSQ --hostname rabbit-2 --name rabbit-2 -p 8082:15672 -p 5673:5672 rabbitmq:3.9.21-management &>/dev/null
+	docker run -d  --net rabbit -v ${PWD}/docker/rabbit-2/:/config/ -e RABBITMQ_CONFIG_FILE=/config/rabbitmq -e RABBITMQ_ERLANG_COOKIE=ETOBVBEFXUPGETFECHSQ --hostname rabbit-2 --name rabbit-2 -p 8082:15672 -p 5673:5672 rabbitmq:3.9.21-management &>/dev/null
 
 	echo "Starting rabbit-3"
 
-	docker run -d --rm --net rabbit -v ${PWD}/docker/rabbit-3/:/config/ -e RABBITMQ_CONFIG_FILE=/config/rabbitmq -e RABBITMQ_ERLANG_COOKIE=ETOBVBEFXUPGETFECHSQ --hostname rabbit-3 --name rabbit-3 -p 8083:15672 -p 5674:5672 rabbitmq:3.9.21-management &>/dev/null
+	docker run -d  --net rabbit -v ${PWD}/docker/rabbit-3/:/config/ -e RABBITMQ_CONFIG_FILE=/config/rabbitmq -e RABBITMQ_ERLANG_COOKIE=ETOBVBEFXUPGETFECHSQ --hostname rabbit-3 --name rabbit-3 -p 8083:15672 -p 5674:5672 rabbitmq:3.9.21-management &>/dev/null
+
 }
 
 mirror () {
@@ -30,6 +34,8 @@ mirror () {
 	docker exec -it rabbit-1 rabbitmq-plugins enable rabbitmq_federation &>/dev/null 
 	docker exec -it rabbit-2 rabbitmq-plugins enable rabbitmq_federation &>/dev/null
 	docker exec -it rabbit-3 rabbitmq-plugins enable rabbitmq_federation &>/dev/null
+
+	
 	docker exec -it rabbit-1 rabbitmqctl set_policy ha-fed ".*" '{"federation-upstream-set":"all","ha-sync-mode":"automatic", "ha-mode":"nodes", "ha-params":["rabbit@rabbit-1","rabbit@rabbit-2","rabbit@rabbit-3"]}' --priority 1 --apply-to queues &>/dev/null
 }
 
@@ -58,7 +64,8 @@ case $1 in
         ;;
 
 	remove)
-		docker rm -f rabbit-1 rabbit-2 rabbit-3
+		docker rm -v -f rabbit-1 rabbit-2 rabbit-3
+		docker network remove rabbit
 	;;
 
         *)

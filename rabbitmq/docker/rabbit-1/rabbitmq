@@ -4,3 +4,14 @@ cluster_formation.peer_discovery_backend = rabbit_peer_discovery_classic_config
 cluster_formation.classic_config.nodes.1 = rabbit@rabbit-1
 cluster_formation.classic_config.nodes.2 = rabbit@rabbit-2
 cluster_formation.classic_config.nodes.3 = rabbit@rabbit-3
+
+stomp.listeners.tcp.1 = 61613
+
+stomp.tcp_listen_options.keepalive = true
+stomp.tcp_listen_options.nodelay   = true
+
+stomp.tcp_listen_options.exit_on_close = true
+stomp.tcp_listen_options.send_timeout  = 120
+
+stomp.default_user = guest
+stomp.default_pass = guest
