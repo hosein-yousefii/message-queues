@@ -1,87 +1,46 @@
-version: '2.1'
+version: '2'
 services:
- zookeeper-1:
-   image: confluentinc/cp-zookeeper:latest
-   environment:
-     ZOOKEEPER_SERVER_ID: 1
-     ZOOKEEPER_CLIENT_PORT: 22181
-     ZOOKEEPER_TICK_TIME: 2000
-     ZOOKEEPER_INIT_LIMIT: 5
-     ZOOKEEPER_SYNC_LIMIT: 2
-     ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
-   network_mode: host
-   extra_hosts:
-     - "moby:127.0.0.1"
- 
- zookeeper-2:
-   image: confluentinc/cp-zookeeper:latest
-   environment:
-     ZOOKEEPER_SERVER_ID: 2
-     ZOOKEEPER_CLIENT_PORT: 32181
-     ZOOKEEPER_TICK_TIME: 2000
-     ZOOKEEPER_INIT_LIMIT: 5
-     ZOOKEEPER_SYNC_LIMIT: 2
-     ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
-   network_mode: host
-   extra_hosts:
-     - "moby:127.0.0.1"
- 
- zookeeper-3:
-   image: confluentinc/cp-zookeeper:latest
-   environment:
-     ZOOKEEPER_SERVER_ID: 3
-     ZOOKEEPER_CLIENT_PORT: 42181
-     ZOOKEEPER_TICK_TIME: 2000
-     ZOOKEEPER_INIT_LIMIT: 5
-     ZOOKEEPER_SYNC_LIMIT: 2
-     ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
-   network_mode: host
-   extra_hosts:
-     - "moby:127.0.0.1"  
- kafka-1:
-   image: confluentinc/cp-kafka:latest
-   network_mode: host
-   depends_on:
-     - zookeeper-1
-     - zookeeper-2
-     - zookeeper-3
-   environment:
-     KAFKA_BROKER_ID: 1
-     KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
-     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:19092
-   ports:
-     - "19092:19092"
-   extra_hosts:
-     - "moby:127.0.0.1"
- 
- kafka-2:
-   image: confluentinc/cp-kafka:latest
-   network_mode: host
-   depends_on:
-     - zookeeper-1
-     - zookeeper-2
-     - zookeeper-3
-   environment:
-     KAFKA_BROKER_ID: 2
-     KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
-     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
-   ports:
-     - "29092:29092"
-   extra_hosts:
-     - "moby:127.0.0.1"
- 
- kafka-3:
-   image: confluentinc/cp-kafka:latest
-   network_mode: host
-   depends_on:
-     - zookeeper-1
-     - zookeeper-2
-     - zookeeper-3
-   environment:
-     KAFKA_BROKER_ID: 3
-     KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
-     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:39092
-   ports:
-     - "39092:39092" 
-   extra_hosts:
-     - "moby:127.0.0.1"
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - kafka-stack        
+  
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://127.0.0.1:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - kafka-stack      
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka:29092'
+    networks:
+      - kafka-stack
+    ports:
+      - 8080:8080
+
+
+networks:
+  kafka-stack:
+    name: kafka-stack
+    driver: bridge
