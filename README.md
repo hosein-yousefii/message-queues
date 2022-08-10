@@ -13,7 +13,7 @@ In this repo 4 famous message brokers (kafka which is used more in data streamin
 
 RabbitMQ is an open-source message-broker software that originally implemented the Advanced Message Queuing Protocol and has since been extended with a plug-in architecture to support Streaming Text Oriented Messaging Protocol, MQ Telemetry Transport, and other protocols.
 
-- [X] In this repo Rabbitmq is used as a single node and in cluster mode.
+- [X] Rabbitmq is used as a single node and in cluster mode.
 - [X] Auto ack is enabled.
 - [X] AMQP is used.
 - [X] Dashboard is enabled on port 8081
