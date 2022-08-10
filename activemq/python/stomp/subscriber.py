@@ -20,7 +20,7 @@ class MyListener(stomp.ConnectionListener):
     def on_disconnected(self):
         print('disconnected')
 
-conn = stomp.Connection([('localhost', 49171)], heartbeats=(4000, 4000))
+conn = stomp.Connection([('localhost', 61613)], heartbeats=(4000, 4000))
 conn.set_listener('', MyListener(conn))
 conn.connect('admin', 'admin', wait=True)
 conn.subscribe(destination='/queue/test', id=1, ack='auto')

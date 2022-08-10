@@ -36,8 +36,8 @@ case $1 in
 
                         source venv/bin/activate
 
-                        python python/ampq/sender.py &
-                        python python/ampq/receiver.py
+                        python python/amqp/sender.py &
+                        python python/amqp/receiver.py
 
                         python python/stomp/publisher.py &
                         python python/stomp/subscriber.py

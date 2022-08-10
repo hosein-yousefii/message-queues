@@ -3,7 +3,7 @@ from __future__ import print_function
 from proton.handlers import MessagingHandler
 from proton.reactor import Container
 
-url = 'amqp://admin:admin@127.0.0.1:49157/queue://q'
+url = 'amqp://admin:admin@127.0.0.1:5672/queue://q'
 
 class Receiver(MessagingHandler):
     def __init__(self, url, messages_to_receive=1000000):

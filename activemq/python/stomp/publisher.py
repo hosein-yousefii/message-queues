@@ -1,7 +1,7 @@
 import stomp
 
 
-conn = stomp.Connection([('localhost', 49171)])
+conn = stomp.Connection([('localhost', 61613)])
 conn.connect('admin', 'admin', wait=True)
 
 while True:

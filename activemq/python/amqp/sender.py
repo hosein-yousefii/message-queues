@@ -4,7 +4,7 @@ from proton.reactor import Container
 from proton import Message
 
 
-url = 'amqp://admin:admin@127.0.0.1:49181/queue://q'
+url = 'amqp://admin:admin@127.0.0.1:5672/queue://q'
 
 
 class Sender(MessagingHandler):
