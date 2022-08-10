@@ -22,7 +22,7 @@ class Sender(MessagingHandler):
     def on_sendable(self, event):
         while event.sender.credit and self._sent_count < len(self._messages):
             message = self._messages[self._message_index]
-            print(message)
+#            print(message)
             event.sender.send(message)
             self._message_index += 1
             self._sent_count += 1
