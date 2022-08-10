@@ -92,6 +92,69 @@ Also, dashboard is available on localhost:8161 with user: admin, password: admin
 
 __________________________________________________
 
+## Kafka
+
+Apache Kafka is a distributed event store and stream-processing platform. It is an open-source system developed by the Apache Software Foundation written in Java and Scala. The project aims to provide a unified, high-throughput, low-latency platform for handling real-time data feeds.
+
+- [X] Is implemented as single mode with zookeeper
+- [X] Dashboard is on port 8080
+
+### Kafka usage:
+
+```bash
+cd kafka
+# implement it
+./deploy.sh
+
+#remove container
+./deploy remove
+```
+
+After implementation you can run python codes:
+
+```bash
+source venv/bin/activate
+python python/publisher.py &
+python python/subscriber.py
+```
+
+Also, dashboard is available on localhost:8080
+
+____________________________________________
+
+## Redis
+
+Redis is an in-memory data structure store, used as a distributed, in-memory key–value database, cache and message broker, with optional durability. Redis supports different kinds of abstract data structures, such as strings, lists, maps, sets, sorted sets, HyperLogLogs, bitmaps, streams, and spatial indices.
+
+- [X] Is implemented as single node and in cluster mode
+
+ * Redis supports transaction and queue too.
+
+### Redis usage:
+
+```bash
+cd rabbitmq
+# for single mode
+./deploy.sh
+
+# for mirror mode
+./deploy.sh cluster
+
+# to remove containers
+./deploy.sh remove
+```
+
+After implementation you can run python codes:
+
+```bash
+source venv/bin/activate
+python python/publisher.py &
+python python/subscriber.py
+```
+
+__________________________________________________
+
+
 # How to contribute?
 
 You can fork and develop your idea.
