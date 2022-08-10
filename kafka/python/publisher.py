@@ -7,7 +7,7 @@ i = 0
 
 for i in range(0,10000):
     producer.send('foobar', b'some_message_bytes')
-    print(i)
+#    print(i)
     i = + 1
 
 #producer.flush()

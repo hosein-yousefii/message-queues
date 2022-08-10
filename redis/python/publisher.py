@@ -19,4 +19,4 @@ print("publishing messages")
 
 for i in range(10000):
     redis.publish("new_user_created", b64encode(dumps(user).encode("ascii")))
-    print(i)
+#    print(i)
