@@ -13,77 +13,57 @@ fi
 
 simple () {
 	
-	docker network create rabbit &>/dev/null
 
-	echo "Starting rabbit-1"
+	echo "Starting redis..."
 
-	docker run -d  --net rabbit -v ${PWD}/docker/rabbit-1/:/config/ -e RABBITMQ_CONFIG_FILE=/config/rabbitmq -e RABBITMQ_ERLANG_COOKIE=ETOBVBEFXUPGETFECHSQ --hostname rabbit-1 --name rabbit-1 -p 8081:15672 -p 5672:5672 rabbitmq:3.9.21-management &>/dev/null
-
-	echo "Starting rabbit-2"
-
-	docker run -d  --net rabbit -v ${PWD}/docker/rabbit-2/:/config/ -e RABBITMQ_CONFIG_FILE=/config/rabbitmq -e RABBITMQ_ERLANG_COOKIE=ETOBVBEFXUPGETFECHSQ --hostname rabbit-2 --name rabbit-2 -p 8082:15672 -p 5673:5672 rabbitmq:3.9.21-management &>/dev/null
-
-	echo "Starting rabbit-3"
-
-	docker run -d  --net rabbit -v ${PWD}/docker/rabbit-3/:/config/ -e RABBITMQ_CONFIG_FILE=/config/rabbitmq -e RABBITMQ_ERLANG_COOKIE=ETOBVBEFXUPGETFECHSQ --hostname rabbit-3 --name rabbit-3 -p 8083:15672 -p 5674:5672 rabbitmq:3.9.21-management &>/dev/null
+	docker run --name redis -d -p 6379:6379 redis
 
 }
 
-mirror () {
-
-	docker exec -it rabbit-1 rabbitmq-plugins enable rabbitmq_federation &>/dev/null 
-	docker exec -it rabbit-2 rabbitmq-plugins enable rabbitmq_federation &>/dev/null
-	docker exec -it rabbit-3 rabbitmq-plugins enable rabbitmq_federation &>/dev/null
-
-	
-	docker exec -it rabbit-1 rabbitmqctl set_policy ha-fed ".*" '{"federation-upstream-set":"all","ha-sync-mode":"automatic", "ha-mode":"nodes", "ha-params":["rabbit@rabbit-1","rabbit@rabbit-2","rabbit@rabbit-3"]}' --priority 1 --apply-to queues &>/dev/null
+cluster () {
+	cd docker
+	./cluster.sh create
+	cd -
 }
 
 case $1 in
 
-        mirror)
-		simple
+        cluster)
+		cluster
+		sed -i "s/host='.*'/host='$(grep redis-1 docker/redis-cluster.info |awk -F: '{print $2}'|sed 's/ //g')'/" python/publisher.py
+		sed -i "s/host='.*'/host='$(grep redis-1 docker/redis-cluster.info |awk -F: '{print $2}'|sed 's/ //g')'/" python/subscriber.py
 		sleep 15s
-                mirror
 
 		echo """
-			system is ready to publish and subsribe messages,
-			use python codes for performance testing,
-			use dashboard to check i/o rate,
-
-			user: guest
-			password: guest
-
-			http://localhost:8081
+			redis is ready to publish and subsribe messages,
+			use python codes,
 
 			source venv/bin/activate
-			python python/publisher.py &
-			python python/subscriber.py
+			python python/subscriber.py &
+			python python/publisher.py 
 
 		"""	
         ;;
 
 	remove)
-		docker rm -v -f rabbit-1 rabbit-2 rabbit-3
-		docker network remove rabbit
+		cd docker
+		docker ps| grep redis-2 && ./cluster.sh remove || docker rm -f redis
+		cd -
+		sed -i "s/host='.*'/host='localhost'/" python/publisher.py
+                sed -i "s/host='.*'/host='localhost'/" python/subscriber.py
 	;;
 
         *)
                 simple
-		sleep 15s
+		sleep 5s
 	        echo """
-                        system is ready to publish and subsribe messages,
-                        use python codes for performance testing,
-                        use dashboard to check i/o rate,
-
-                        user: guest
-                        password: guest
-
-                        http://localhost:8081
+                        redis is ready to publish and subsribe messages,
+                        use python codes,
 
                         source venv/bin/activate
-                        python python/publisher.py &
-                        python python/subscriber.py
+                        python python/subscriber.py &
+                        python python/publisher.py
+
 
                 """
 	;;

@@ -2,7 +2,7 @@ from redis import Redis
 from json import loads
 from base64 import b64decode
 
-redis = Redis(decode_responses=True)
+redis = Redis(decode_responses=True, host='localhost', port=6379)
 
 if redis.ping() is False:
         raise Exception("Couldn't connect to redis.")
