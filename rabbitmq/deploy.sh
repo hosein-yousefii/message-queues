@@ -81,9 +81,9 @@ case $1 in
 
                         http://localhost:8081
 
-                        source venv/bin/activate
-                        python python/publisher.py &
-                        python python/subscriber.py
+source venv/bin/activate
+python python/publisher.py &
+python python/subscriber.py
 
                 """
 	;;

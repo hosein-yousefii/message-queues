@@ -28,9 +28,9 @@ case $1 in
 
 			dashboard: http://localhost:8080
 
-			source venv/bin/activate
-			python python/publisher.py
-			python python/subscriber.py
+source venv/bin/activate
+python python/publisher.py
+python python/subscriber.py
 
 
                 """

@@ -38,9 +38,9 @@ case $1 in
 			redis is ready to publish and subsribe messages,
 			use python codes,
 
-			source venv/bin/activate
-			python python/subscriber.py &
-			python python/publisher.py 
+source venv/bin/activate
+python python/subscriber.py &
+python python/publisher.py 
 
 		"""	
         ;;

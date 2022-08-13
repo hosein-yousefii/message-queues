@@ -34,13 +34,13 @@ case $1 in
 
                         amq port: 5672
 
-                        source venv/bin/activate
+source venv/bin/activate
 
-                        python python/amqp/sender.py &
-                        python python/amqp/receiver.py
+python python/amqp/sender.py &
+python python/amqp/receiver.py
 
-                        python python/stomp/publisher.py &
-                        python python/stomp/subscriber.py
+python python/stomp/publisher.py &
+python python/stomp/subscriber.py
 
                 """
         ;;
