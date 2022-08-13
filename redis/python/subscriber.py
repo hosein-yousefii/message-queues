@@ -14,7 +14,6 @@ pubsub.subscribe("new_user_created")
 i = 0
 
 for message in pubsub.listen():
-        #print()
         if message["type"] == "message":
                 user = loads(b64decode(message["data"]).decode("utf8"))
                 #print(f"Going to active user {user['username']}")
